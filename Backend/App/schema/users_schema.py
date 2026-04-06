@@ -12,6 +12,14 @@ class UserResponse(BaseModel):
     id: str
     message: str
 
+class LoginResponse(BaseModel):
+    message: str
+    token: str
+    expired_at: datetime
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
 class UserListResponse(BaseModel):
     id: UUID
     name: str

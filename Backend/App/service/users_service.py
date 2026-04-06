@@ -3,6 +3,8 @@ from passlib.context import CryptContext
 from App.model.users import User
 from fastapi import HTTPException
 import uuid
+from App.service.authentication_service import create_jwt_token
+from App.schema.users_schema import LoginRequest
 
 password_hash = CryptContext(schemes=["argon2"], deprecated="auto")  
 
@@ -39,12 +41,37 @@ def list_users(db:Session):
    users= db.query(User).all()
 
    if not users:
-        raise HTTPException(
-            status_code=404,
-            detail="No users found"
-        )
+       raise HTTPException(
+          status_code=404,
+          detail="No users found"
+       )
    
    return{
-      "message": "Users retrieved successfully",
-      "data": users
-     }
+     "message": "Users retrieved successfully",
+     "data": users
+    }
+
+def login_user(user_data: LoginRequest, db: Session):
+    user = db.query(User).filter(User.email == user_data.email).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email"
+        )
+
+    # Verify hashed password
+    password_validation = password_hash.verify(user_data.password, user.password)
+    if not password_validation:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid password"
+        )
+
+    token, expired_at = create_jwt_token(str(user.id), user.email)
+
+    return {
+        "message": "Login successful",
+        "token": token,
+        "expired_at": expired_at
+    }
