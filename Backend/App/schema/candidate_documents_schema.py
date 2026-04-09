@@ -5,7 +5,7 @@ from typing import Optional
 class GetCandidateDocumentResponse(BaseModel):
     resume_id: str
     document_text: str
-    embedding: list[float]
+    file_name: str
     created_at: datetime
 
 class ListDocuments(BaseModel):

@@ -10,16 +10,16 @@ router= APIRouter(tags=["candidate document management"])
 
 
 @router.get("/get-documents",response_model=ListDocuments)
-async def get_documents(db: Session = Depends(get_db)):
-    return get_all_documents(db)
+async def get_documents(db: Session = Depends(get_db), current_user=Depends(get_current_user)):
+    return get_all_documents(db, current_user)
 
 
 @router.post("/upload-documents", response_model=CandidateDocumentResponse)
 async def upload_documents(upload_file: UploadFile = File(...), db: Session = Depends(get_db), current_user=Depends(get_current_user)):
-    candidate_doc = await process_resume_file(upload_file, db)
+    candidate_doc = await process_resume_file(upload_file, db, current_user)
     return candidate_doc
 
 @router.delete("/delete-document/{resume_id}",response_model=DocumentDelete)
 async def delete_document(resume_id:str, db:Session=Depends(get_db), current_user=Depends(get_current_user)):
-    return delete_file(resume_id ,db)
+    return delete_file(resume_id, db, current_user)
 
