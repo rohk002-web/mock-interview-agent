@@ -7,7 +7,7 @@ from App.model.candidate_interview_details import CandidateInterviewDetails
 import uuid
 
 
-def add_interview_details(db:Session,current_user, resume_id: int, role: str, years_of_experience: float, interview_level: str):
+def add_interview_details(db:Session,current_user, resume_id: int, role: str, years_of_experience: float, interview_level: str, interview_mode: str):
     try:
         resume = db.query(CandidateDocument).filter(
         CandidateDocument.resume_id == resume_id,
@@ -20,7 +20,8 @@ def add_interview_details(db:Session,current_user, resume_id: int, role: str, ye
             user_id=current_user.id,
             role=role,
             years_of_experience=years_of_experience,
-            interview_level=interview_level
+            interview_level=interview_level,
+            interview_mode=interview_mode
         )
         db.add(interview_details)
         db.commit()

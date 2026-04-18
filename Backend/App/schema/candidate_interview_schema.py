@@ -7,6 +7,7 @@ class SaveCandidateInterviewDetails(BaseModel):
     role: str
     years_of_experience: float
     interview_level: str
+    interview_mode: Optional[str] = "chat"
 
 
 class CandidateInterviewDetailsResponse(BaseModel):

@@ -13,4 +13,5 @@ class CandidateInterviewDetails(Base):
     role= Column(String, nullable=False)
     years_of_experience= Column(Float, nullable=False)
     interview_level= Column(String, nullable=False)
+    interview_mode= Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

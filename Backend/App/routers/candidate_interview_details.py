@@ -9,4 +9,4 @@ router= APIRouter(tags=["Interview details management"])
 
 @router.post("/add-interview-details",response_model=CandidateInterviewDetailsResponse)
 async def interview_details(request: SaveCandidateInterviewDetails, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
-    return add_interview_details(db, current_user, resume_id=request.resume_id, role=request.role, years_of_experience=request.years_of_experience, interview_level=request.interview_level)
+    return add_interview_details(db, current_user, resume_id=request.resume_id, role=request.role, years_of_experience=request.years_of_experience, interview_level=request.interview_level, interview_mode=request.interview_mode)
