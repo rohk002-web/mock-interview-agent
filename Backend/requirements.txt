@@ -12,3 +12,4 @@ PyJWT
 gunicorn
 pgvector==0.5.0
 PyMuPDF==1.23.6
+groq
