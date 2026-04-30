@@ -34,3 +34,29 @@ def add_interview_details(db:Session,current_user, resume_id: int, role: str, ye
         raise 
     except Exception as e:
         raise Exception(f"Failed to add interview details: {str(e)}")
+    
+    
+def get_interview_details_service(db:Session,current_user):
+    interview_details = db.query(CandidateInterviewDetails).filter(
+        CandidateInterviewDetails.user_id == current_user.id
+    ).all()
+
+    if not interview_details:
+        raise HTTPException(status_code=404, detail="Interview details not found")
+
+    data= [
+        {
+        "interview_id": str(interview.interview_id),
+        "resume_id": str(interview.resume_id),
+        "role": interview.role,
+        "years_of_experience": interview.years_of_experience,
+        "interview_level": interview.interview_level,
+        "interview_mode": interview.interview_mode
+        }
+        for interview in interview_details
+
+    ]
+    return {
+         "message": "Interview details retrieved successfully",
+         "data": data
+     }

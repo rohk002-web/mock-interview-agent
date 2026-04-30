@@ -102,6 +102,9 @@ def chat_service(db, interview_id, user_id, user_answer):
 
     return {"response": result}
 
+
+
+
 def parse_evaluation_response(response: str):
 
     try:
@@ -114,6 +117,8 @@ def parse_evaluation_response(response: str):
             status_code=500,
             detail=f"Invalid LLM response format: {str(e)}"
         )
+
+
 
 def end_interview_service(db, interview_id, current_user):
 
@@ -151,6 +156,7 @@ def end_interview_service(db, interview_id, current_user):
     result = parse_evaluation_response(response)
 
     return result
+
 
 def interview_save_report(db, report, current_user):
     try:
