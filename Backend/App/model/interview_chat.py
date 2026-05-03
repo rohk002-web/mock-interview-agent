@@ -12,6 +12,4 @@ class InterviewChatHistory(Base):
     interview_id = Column(UUID(as_uuid=True),ForeignKey("candidate_interview_details.interview_id"),nullable=False)
     question = Column(Text, nullable=False)
     answer = Column(Text, nullable=True)
-    score = Column(Integer, nullable=True)   
-    feedback = Column(Text, nullable=True)      
     created_at = Column(DateTime, default=datetime.utcnow)

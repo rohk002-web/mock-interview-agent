@@ -2,20 +2,15 @@ from App.service.authentication_service import get_current_user
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from App.config.db_connection import get_db
-from App.service.interview_service import end_interview_service, get_interview_report_service, start_interview_service, chat_service , interview_save_report
+from App.service.interview_service import end_interview_service, get_interview_report_service, interview_conversation_service , interview_save_report
 from App.model.candidate_interview_details import CandidateInterviewDetails
 from App.schema.interview_schema import ChatRequest, InterviewReportResponse, InterviewReportSchema
 
 router = APIRouter(tags=["Mock interview management"])
 
-@router.post("/start-interview/{interview_id}")
-async def start_interview(interview_id: str,db: Session = Depends(get_db),current_user=Depends(get_current_user)):
-    return start_interview_service(db, interview_id, current_user.id)
-
-
-@router.post("/chat/{interview_id}")
-async def chat(interview_id: str,request: ChatRequest,db: Session = Depends(get_db),current_user=Depends(get_current_user)):
-    return chat_service(db, interview_id, current_user.id, request.user_answer)
+@router.post("/interview-conversation/{interview_id}")
+def interview_conversation(interview_id: str, request: ChatRequest, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
+    return interview_conversation_service(db,interview_id,current_user.id,request.user_answer)
 
 @router.post("/end-interview/{interview_id}")
 def end_interview(interview_id: str,db: Session = Depends(get_db),current_user=Depends(get_current_user)):

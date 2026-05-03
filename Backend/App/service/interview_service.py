@@ -1,4 +1,4 @@
-from App.Prompt.interview_prompt import INTERVIEW_START_PROMPT, CHAT_PROMPT , EVALUATION_PROMPT
+from App.Prompt.interview_prompt import INTERVIEW_CONVERSATION_CONTINUE_PROMPT,INTERVIEW_CONVERSATION_START_PROMPT , EVALUATION_PROMPT
 from App.schema.interview_schema import InterviewReportSchema
 from fastapi import HTTPException
 import json
@@ -11,7 +11,7 @@ import os
 from google import genai
 from App.service.embedding_logic import get_embedding, get_relevant_chunks, call_llm, parse_evaluation_response
 
-def start_interview_service(db, interview_id, user_id):
+def interview_conversation_service(db, interview_id, user_id, user_answer):
 
     interview = db.query(CandidateInterviewDetails).filter(
         CandidateInterviewDetails.interview_id == interview_id,
@@ -21,67 +21,52 @@ def start_interview_service(db, interview_id, user_id):
     if not interview:
         raise ValueError("Interview not found")
 
-    query_embedding = get_embedding(
-        f"{interview.role} {interview.interview_level}"
-    )
-
-    chunks = get_relevant_chunks(
-        db,
-        interview.resume_id,
-        query_embedding,
-        top_k=5
-    )
-
-    resume_context = "\n".join([c.document_text for c in chunks])
-
-    prompt = INTERVIEW_START_PROMPT.format(
-        resume=resume_context,
-        role=interview.role,
-        experience=interview.years_of_experience,
-        level=interview.interview_level
-    )
-
-    question = call_llm(prompt)
-
-    db.add(InterviewChatHistory(
-        interview_id=interview.interview_id,
-        question=question
-    ))
-    db.commit()
-
-    return {"question": question}
-
-
-def chat_service(db, interview_id, user_id, user_answer):
-
-    interview = db.query(CandidateInterviewDetails).filter(
-        CandidateInterviewDetails.interview_id == interview_id,
-        CandidateInterviewDetails.user_id == user_id
-    ).first()
-
-    if not interview:
-        raise ValueError("Interview not found")
-
+    # STEP 1: GET LAST CHAT
     last = db.query(InterviewChatHistory)\
-        .filter_by(interview_id=interview.interview_id)\
+        .filter_by(interview_id=interview_id)\
         .order_by(InterviewChatHistory.created_at.desc())\
         .first()
 
-    last.answer = user_answer
-    db.commit()
+    # STEP 2: RAG CONTEXT
+    query_text = user_answer if user_answer else f"{interview.role} {interview.interview_level}"
 
-    query_embedding = get_embedding(user_answer)
+    query_embedding = get_embedding(query_text)
 
-    relevant_chunks = get_relevant_chunks(
+    chunks = get_relevant_chunks(
         db,
         interview.resume_id,
         query_embedding,
         top_k=3
     )
 
-    resume_context = "\n".join([c.document_text for c in relevant_chunks])
+    resume_context = "\n".join([c.document_text for c in chunks])
 
-    prompt = CHAT_PROMPT.format(
+    # STEP 3: FIRST INTERACTION
+    if not last:
+
+        prompt = INTERVIEW_CONVERSATION_START_PROMPT.format(
+            resume=resume_context,
+            role=interview.role,
+            level=interview.interview_level
+        )
+
+        response = call_llm(prompt)
+
+        db.add(InterviewChatHistory(
+            interview_id=interview_id,
+            question=response,
+            answer=None
+        ))
+        db.commit()
+
+        return {"response": response}
+
+    # STEP 4: SAVE USER ANSWER
+    last.answer = user_answer
+    db.commit()
+
+    # STEP 5: CONTINUE INTERVIEW
+    prompt = INTERVIEW_CONVERSATION_CONTINUE_PROMPT.format(
         resume=resume_context,
         question=last.question,
         answer=user_answer,
@@ -91,20 +76,19 @@ def chat_service(db, interview_id, user_id, user_answer):
 
     result = call_llm(prompt)
 
+    # STEP 6: END CHECK
     if "INTERVIEW_END" in result:
         return {"message": "Interview Completed"}
 
-    next_question = result.strip()
-
+    # STEP 7: SAVE NEXT QUESTION
     db.add(InterviewChatHistory(
-        interview_id=interview.interview_id,
-        question=next_question
+        interview_id=interview_id,
+        question=result,
+        answer=None
     ))
     db.commit()
 
-    return {"question": next_question}
-
-
+    return {"response": result}
 
 def end_interview_service(db, interview_id, current_user):
 

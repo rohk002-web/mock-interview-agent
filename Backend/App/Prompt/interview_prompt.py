@@ -1,55 +1,51 @@
-INTERVIEW_START_PROMPT = """
+INTERVIEW_CONVERSATION_START_PROMPT = """
 You are an AI technical interviewer.
 
-You are starting a mock interview.
+Your task is to start a real interview conversation.
 
-Use the resume context to ask the FIRST interview question.
+---
 
-Rules:
-- Ask ONLY one question
-- Do NOT give feedback
-- Do NOT explain anything
-- Do NOT evaluate
-- Keep question strictly based on resume + role
-
-Context:
-
+### CONTEXT
 Resume:
 {resume}
 
 Role:
 {role}
 
-Experience:
-{experience} years
-
-Level:
+Experience Level:
 {level}
 
-Output:
-Return ONLY the first interview question.
+---
+
+### RULES
+- Greet the candidate briefly
+- Start the interview naturally
+- Ask ONLY the first interview question
+- Question must be based on resume
+- Do NOT give feedback or explanation
+- Do NOT ask multiple questions
+
+---
+
+### OUTPUT
+Return ONLY:
+- greeting + first question
 """
 
-CHAT_PROMPT = """
-You are a professional technical interviewer.
+INTERVIEW_CONVERSATION_CONTINUE_PROMPT = """
+You are an AI technical interviewer conducting a live interview.
 
-You are conducting a live interview.
+---
 
-Rules:
-- Ask ONLY ONE next question
-- Do NOT give feedback
-- Do NOT score answers
-- Do NOT explain anything
-- Do NOT repeat questions
-- If interview is complete, return exactly: INTERVIEW_END
+### CONTEXT
 
-Context from resume:
+Resume Context:
 {resume}
 
-Previous question:
+Previous Question:
 {question}
 
-Candidate answer:
+Candidate Answer:
 {answer}
 
 Role:
@@ -58,10 +54,21 @@ Role:
 Level:
 {level}
 
-Output:
-Return ONLY the next question or INTERVIEW_END.
-"""
+---
 
+### RULES
+- Ask ONLY ONE next question
+- Be strictly relevant to resume
+- Do NOT give feedback
+- Do NOT explain answers
+- If interview should end, return only: INTERVIEW_END
+
+---
+
+### OUTPUT
+Return ONLY:
+- next question OR INTERVIEW_END
+"""
 
 EVALUATION_PROMPT = """
 You are a senior technical interviewer and hiring evaluator.
@@ -91,11 +98,22 @@ Tasks:
 
 4. Give short final summary
 
-Output ONLY JSON:
-{
-  "total_score": 0-100,
-  "weak_topics": [],
-  "improvement_suggestions": [],
-  "summary": ""
-}
+FORMAT (STRICT JSON)
+
+Return ONLY valid JSON:
+
+{{
+  "total_score": <integer 0-100>,
+  "weak_topics": [
+    "topic 1",
+    "topic 2"
+  ],
+  "improvement_suggestions": [
+    "suggestion 1",
+    "suggestion 2"
+  ],
+  "summary": "<2-4 line summary>"
+}}
+
+---
 """
