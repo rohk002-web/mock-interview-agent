@@ -14,6 +14,7 @@ class ListDocuments(BaseModel):
 
 class CandidateDocumentResponse(BaseModel):
     resume_id :str
+    chunks_stored: int
     message: str
 
 class DocumentDelete(BaseModel):

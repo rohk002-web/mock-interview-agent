@@ -8,6 +8,7 @@ from App.model.interview_chat import InterviewChatHistory
 from groq import Groq
 from App.model.interview_report import InterviewReport
 import os
+from google import genai
 
 def get_resume(db, resume_id, user_id):
     return db.query(CandidateDocument).filter(
@@ -15,6 +16,25 @@ def get_resume(db, resume_id, user_id):
         CandidateDocument.user_id == user_id
     ).first()
 
+
+def get_embedding(text):
+    client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+    response = client.models.embed_content(
+        model="models/gemini-embedding-001",
+        contents=text
+    )
+
+    return response.embeddings[0].values
+
+def get_relevant_chunks(db, resume_id, query_embedding, top_k=3):
+    return (
+        db.query(CandidateDocument)
+        .filter(CandidateDocument.resume_id == resume_id)
+        .order_by(CandidateDocument.embedding.cosine_distance(query_embedding))
+        .limit(top_k)
+        .all()
+    )
 
 def call_llm(prompt):
     client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -31,78 +51,99 @@ def call_llm(prompt):
 
 
 def start_interview_service(db, interview_id, user_id):
-    
+
     interview = db.query(CandidateInterviewDetails).filter(
         CandidateInterviewDetails.interview_id == interview_id,
         CandidateInterviewDetails.user_id == user_id
     ).first()
-    
+
     if not interview:
         raise ValueError("Interview not found")
-    
-    resume = get_resume(db, interview.resume_id, interview.user_id)
+
+    # create dummy embedding for role-based retrieval
+    query_embedding = get_embedding(
+        f"{interview.role} {interview.interview_level}"
+    )
+
+    chunks = get_relevant_chunks(
+        db,
+        interview.resume_id,
+        query_embedding,
+        top_k=5
+    )
+
+    resume_context = "\n".join([c.document_text for c in chunks])
 
     prompt = INTERVIEW_START_PROMPT.format(
-        resume=resume.document_text,
+        resume=resume_context,
         role=interview.role,
         experience=interview.years_of_experience,
         level=interview.interview_level
     )
 
     question = call_llm(prompt)
-    
-    chat_record = InterviewChatHistory(
+
+    db.add(InterviewChatHistory(
         interview_id=interview.interview_id,
         question=question
-    )
-    db.add(chat_record)
+    ))
     db.commit()
 
-    return {
-        "question": question
-    }
+    return {"question": question}
 
 
 def chat_service(db, interview_id, user_id, user_answer):
+
     interview = db.query(CandidateInterviewDetails).filter(
         CandidateInterviewDetails.interview_id == interview_id,
         CandidateInterviewDetails.user_id == user_id
     ).first()
-    
+
     if not interview:
         raise ValueError("Interview not found")
-    
+
+    # STEP 1: GET LAST QUESTION
     last = db.query(InterviewChatHistory)\
         .filter_by(interview_id=interview.interview_id)\
         .order_by(InterviewChatHistory.created_at.desc())\
         .first()
 
-    if not last:
-        raise ValueError("No active interview session found")
-    
     last.answer = user_answer
     db.commit()
-    
-    resume = get_resume(db, interview.resume_id, interview.user_id)
 
+    # STEP 2: CREATE EMBEDDING FOR USER ANSWER
+    query_embedding = get_embedding(user_answer)
+
+    # STEP 3: VECTOR SEARCH (MOST IMPORTANT PART)
+    relevant_chunks = get_relevant_chunks(
+        db,
+        interview.resume_id,
+        query_embedding,
+        top_k=3
+    )
+
+    resume_context = "\n".join([c.document_text for c in relevant_chunks])
+
+    # STEP 4: LLM PROMPT
     prompt = CHAT_PROMPT.format(
-        resume=resume.document_text,
+        resume=resume_context,
         question=last.question,
-        answer=user_answer
+        answer=user_answer,
+        role=interview.role,
+        level=interview.interview_level
     )
 
     result = call_llm(prompt)
+
     if "INTERVIEW_END" in result:
         return {"message": "Interview Completed"}
 
-    next_question = result.split("3. Next Question:")[-1]
+    next_question = result.split("Next Question:")[-1]
 
-    new_row = InterviewChatHistory(
+    db.add(InterviewChatHistory(
         interview_id=interview.interview_id,
         question=next_question
-    )
-
-    db.add(new_row)
+    ))
     db.commit()
 
     return {"response": result}
