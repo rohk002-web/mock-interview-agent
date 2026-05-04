@@ -10,7 +10,7 @@ argon2-cffi
 reportlab
 PyJWT
 gunicorn
-pgvector==0.5.0
+pgvector==0.1.4
 PyMuPDF==1.23.6
 groq
 redis
