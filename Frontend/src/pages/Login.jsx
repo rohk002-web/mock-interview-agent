@@ -29,7 +29,7 @@ const Login = () => {
       }
 
       toast.success(res?.message || "Welcome back!");
-      navigate("/");
+      navigate("/home");
       return true;
     } catch (err) {
       toast.error(err?.message || err?.detail || "Login failed");

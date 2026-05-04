@@ -23,7 +23,7 @@ const SignInForm = ({ onSubmit, loading }) => {
     <div className="auth-card">
       <div className="auth-header text-left">
         <h2 className="auth-title">Welcome Back</h2>
-        <p className="auth-subtitle">Sign in to continue your AI-powered interview prep</p>
+        <p className="auth-subtitle">Sign in to continue your AI-powered interview</p>
       </div>
 
       <form onSubmit={handleSubmit} noValidate>
