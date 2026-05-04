@@ -35,10 +35,10 @@ export default function RegistrationForm() {
     setLoading(true);
     try {
       const res = await registerUser(form);
-      toast.success(res?.message || "Account created successfully");
+      toast.success(res?.message);
       navigate("/login");
     } catch (err) {
-      toast.error(err?.message || "Registration failed");
+      toast.error(err?.message || err?.detail || "Registration failed");
     } finally {
       setLoading(false);
     }

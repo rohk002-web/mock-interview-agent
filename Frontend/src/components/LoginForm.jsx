@@ -33,10 +33,10 @@ export default function LoginForm() {
         return;
       }
 
-      toast.success(res?.message || "Logged in successfully");
+      toast.success(res?.message);
       navigate("/");
     } catch (err) {
-      toast.error(err?.message || "Login failed");
+      toast.error(err?.message || err?.detail || "Login failed");
     } finally {
       setLoading(false);
     }

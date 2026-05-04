@@ -1,19 +1,5 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-const extractErrorMessage = async (res) => {
-  try {
-    const data = await res.json();
-    return data?.message || data?.detail;
-  } catch {
-    try {
-      const text = await res.text();
-      return text;
-    } catch {
-      return null;
-    }
-  }
-};
-
 export const registerUser = async (data) => {
   const res = await fetch(`${BASE_URL}/create-user`, {
     method: "POST",
@@ -23,12 +9,18 @@ export const registerUser = async (data) => {
     body: JSON.stringify(data),
   });
 
+  const responseData = await res.json();
+
   if (!res.ok) {
-    const message = (await extractErrorMessage(res)) || "Registration failed";
-    throw new Error(message);
+    throw new Error(
+      responseData?.detail ||
+      responseData?.error ||
+      responseData?.message ||
+      "Registration failed"
+    );
   }
 
-  return res.json();
+  return responseData;
 };
 
 export const loginUser = async (data) => {
@@ -40,10 +32,17 @@ export const loginUser = async (data) => {
     body: JSON.stringify(data),
   });
 
+  const responseData = await res.json();
+
   if (!res.ok) {
-    const message = (await extractErrorMessage(res)) || "Login failed";
-    throw new Error(message);
+    // ✅ same fix here
+    throw new Error(
+      responseData?.detail ||
+      responseData?.error ||
+      responseData?.message ||
+      "Login failed"
+    );
   }
 
-  return res.json();
+  return responseData;
 };
