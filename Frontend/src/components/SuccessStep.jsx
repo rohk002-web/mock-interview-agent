@@ -1,7 +1,18 @@
 import { CheckCircle, Play } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-const SuccessStep = ({ interviewData, onStartInterview }) => {
+const SuccessStep = ({ interviewData, interviewId }) => {
+  const navigate = useNavigate();
+
+  const onStartInterview = () => {
+    if (!interviewId) {
+      toast.error("Interview ID not found. Please try again.");
+      return;
+    }
+    navigate(`/interview/${interviewId}`);
+  };
+
   return (
     <div className="p-6 text-center animate-fade-in">
       <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-200">

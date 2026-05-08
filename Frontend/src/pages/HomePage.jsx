@@ -5,6 +5,7 @@ import StepIndicator from "../components/StepIndicator";
 import UploadStep from "../components/UploadStep";
 import InterviewDetailsStep from "../components/InterviewDetailsStep";
 import SuccessStep from "../components/SuccessStep";
+import Header from "../components/Header";
 
 const steps = {
   UPLOAD: "upload",
@@ -16,6 +17,7 @@ const HomePage = () => {
   const [currentStep, setCurrentStep] = useState(steps.UPLOAD);
   const [resumeId, setResumeId] = useState(null);
   const [interviewData, setInterviewData] = useState(null);
+  const [interviewId, setInterviewId] = useState(null);
 
   const handleUploadSuccess = (id) => {
     setResumeId(id);
@@ -24,6 +26,7 @@ const HomePage = () => {
 
   const handleDetailsSuccess = (data) => {
     setInterviewData(data);
+    setInterviewId(data.interview_id);
     setCurrentStep(steps.SUCCESS);
   };
 
@@ -31,12 +34,9 @@ const HomePage = () => {
     setCurrentStep(steps.UPLOAD);
   };
 
-  const handleStartInterview = () => {
-    toast.success("Starting your mock interview...");
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-200 via-slate-100 to-indigo-200 relative overflow-hidden">
+      <Header />
       {/* Soft Animated Blobs - Slightly darker */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-indigo-400/20 rounded-full filter blur-[80px] animate-blob"></div>
       <div className="absolute top-40 right-10 w-72 h-72 bg-purple-400/20 rounded-full filter blur-[80px] animate-blob animation-delay-2000"></div>
@@ -46,13 +46,11 @@ const HomePage = () => {
       <header className="relative z-10 pt-8 pb-4 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/70 border border-slate-300 rounded-full mb-4 shadow-sm">
           <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse"></span>
-          <span className="text-xs font-medium text-slate-700">AI-Powered Interview Prep</span>
+          <span className="text-xs font-medium text-slate-700">AI-Powered Interview</span>
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
-          Mock Interview <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-purple-700">AI</span>
-        </h1>
+
         <p className="mt-2 text-sm text-slate-700">
-          Upload resume → Get AI questions → Practice & Improve
+          Upload your resume → Enter the interview details → Start your AI mock interview
         </p>
       </header>
 
@@ -77,7 +75,7 @@ const HomePage = () => {
           {currentStep === steps.SUCCESS && interviewData && (
             <SuccessStep
               interviewData={interviewData}
-              onStartInterview={handleStartInterview}
+              interviewId={interviewId}
             />
           )}
         </div>

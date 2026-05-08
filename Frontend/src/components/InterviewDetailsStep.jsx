@@ -38,8 +38,9 @@ const InterviewDetailsStep = ({ resumeId, onBack, onSuccess }) => {
     setSubmitting(true);
     try {
       const res = await addInterviewDetails(payload);
-      toast.success(res.message);
-      onSuccess(interviewData);
+      toast.success(res.message || "Interview created successfully!");
+      // Pass full API response which should include interview_id
+      onSuccess({ ...interviewData, interview_id: res.interview_id || res.id });
     } catch (err) {
       toast.error(err?.message || "Failed to save interview details");
     } finally {
@@ -111,7 +112,7 @@ const InterviewDetailsStep = ({ resumeId, onBack, onSuccess }) => {
         <button
           onClick={handleSubmitDetails}
           disabled={submitting}
-          className="flex-1 py-3 rounded-lg font-semibold text-sm text-white bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg shadow-purple-200 hover:shadow-xl transition-all disabled:opacity-50"
+          className="flex-1 py-3 rounded-lg font-semibold text-sm text-white bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg shadow-purple-200 hover:shadow-xl transition-all disabled:opacity-50 cursor-pointer"
         >
           {submitting ? (
             <span className="flex items-center justify-center gap-2">
