@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { registerUser } from "../api/authApi";
+import { registerUser } from "../api/authapi";
 import AuthSidePanel from "../components/AuthSidePanel";
 import CreateUserForm from "../components/CreateUserForm";
 import "../components/AuthStyles.css";
