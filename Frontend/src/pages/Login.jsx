@@ -1,14 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { loginUser } from "../api/authapi";
 import AuthSidePanel from "../components/AuthSidePanel";
 import SignInForm from "../components/SignInForm";
-import "../components/AuthStyles.css";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState("login");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (mode === "signup") {
+      navigate("/register");
+    }
+  }, [mode, navigate]);
 
   const handleSignIn = async (data) => {
     setLoading(true);
@@ -40,16 +46,9 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-wrapper">
-        <AuthSidePanel />
-        <div className="auth-form-container">
-          <SignInForm 
-          onSubmit={handleSignIn} loading={loading} 
-          />
-        </div>
-      </div>
-    </div>
+    <AuthSidePanel mode={mode} setMode={setMode}>
+      <SignInForm onSubmit={handleSignIn} loading={loading} />
+    </AuthSidePanel>
   );
 };
 

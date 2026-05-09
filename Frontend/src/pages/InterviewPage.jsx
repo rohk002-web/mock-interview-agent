@@ -23,30 +23,10 @@ const InterviewPage = () => {
   const [report, setReport] = useState(null);
   const [showReport, setShowReport] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isInterviewEnded, setIsInterviewEnded] = useState(false);
 
 
-  const sendMessage = async (text) => {
-    const userMsg = { role: "user", text };
-    setMessages((prev) => [...prev, userMsg]);
-    setLoading(true);
 
-    try {
-      const data = await sendInterviewMessage(interviewId, text);
-
-      const aiMsg = {
-        role: "ai",
-        text: data?.reply || data?.response || "I'm thinking..."
-      };
-
-      setMessages((prev) => [...prev, aiMsg]);
-    } catch (err) {
-      console.error("Send message error:", err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 🛑 END INTERVIEW
   const handleEndClick = () => {
     setShowConfirm(true);
   };
@@ -59,6 +39,7 @@ const InterviewPage = () => {
       const data = await endInterviewApi(interviewId);
       setReport(data);
       setShowReport(true);
+      setIsInterviewEnded(true);
     } catch (err) {
       console.error("End interview error:", err.message);
       alert("Failed to end interview. Please try again.");
@@ -69,6 +50,45 @@ const InterviewPage = () => {
 
   const cancelEndInterview = () => {
     setShowConfirm(false);
+  };
+
+  const sendMessage = async (text) => {
+    const userMsg = { role: "user", text };
+
+    if (isInterviewEnded) return; 
+
+    setMessages((prev) => [...prev, userMsg]);
+    setLoading(true);
+
+    try {
+      const data = await sendInterviewMessage(interviewId, text);
+
+      const aiText = data?.reply || data?.response;
+
+      const aiMsg = {
+        role: "ai",
+        text: aiText
+      };
+
+      setMessages((prev) => [...prev, aiMsg]);
+
+      // ✅ detect end
+      if (aiText?.toLowerCase().includes("interview completed")) {
+        setIsInterviewEnded(true);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "ai",
+            text: "Interview is over. Please click the End Interview button to continue."
+          }
+        ]);
+      }
+
+    } catch (err) {
+      console.error("Send message error:", err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoHome = () => {
@@ -90,6 +110,7 @@ const InterviewPage = () => {
         onEnd={handleEndClick}
         loading={loading}
         ending={ending}
+        disabled={isInterviewEnded}
       />
 
       {/* CONFIRMATION DIALOG */}

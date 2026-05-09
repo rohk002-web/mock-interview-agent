@@ -61,13 +61,27 @@ Level:
 - Be strictly relevant to resume
 - Do NOT give feedback
 - Do NOT explain answers
-- If interview should end, return only: INTERVIEW_END
+
+### SPECIAL END CONDITION
+If the candidate expresses intent like:
+- "end interview"
+- "finish interview"
+- "stop interview"
+- "complete interview"
+
+OR if interview should end naturally:
+
+Return EXACTLY this string:
+Interview Completed
+
+(No extra words, no punctuation, no explanation)
 
 ---
 
 ### OUTPUT
 Return ONLY:
-- next question OR INTERVIEW_END
+- next question OR
+- Interview Completed
 """
 
 EVALUATION_PROMPT = """

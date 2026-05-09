@@ -1,11 +1,18 @@
 import { Send, Square, Loader2 } from "lucide-react";
 import { useState } from "react";
 
-const InterviewInput = ({ onSend, onEnd, loading, ending }) => {
+const InterviewInput = ({
+  onSend,
+  onEnd,
+  loading,
+  ending,
+  disabled
+}) => {
   const [text, setText] = useState("");
 
   const handleSend = () => {
-    if (!text.trim()) return;
+    if (!text.trim() || disabled) return;
+
     onSend(text);
     setText("");
   };
@@ -18,24 +25,28 @@ const InterviewInput = ({ onSend, onEnd, loading, ending }) => {
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Type your answer..."
+          placeholder={disabled ? "Interview completed" : "Type your answer..."}
           className="flex-1 bg-transparent outline-none text-sm text-slate-700 placeholder-slate-400"
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSend();
           }}
-          disabled={ending}
+          disabled={disabled || ending}
         />
 
         {/* send */}
         <button
           onClick={handleSend}
-          disabled={loading || ending}
+          disabled={loading || ending || disabled}
           className="p-2.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-all cursor-pointer"
         >
-          {loading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+          {loading ? (
+            <Loader2 size={18} className="animate-spin" />
+          ) : (
+            <Send size={18} />
+          )}
         </button>
 
-        {/* end interview - professional style */}
+        {/* end interview */}
         <button
           onClick={onEnd}
           disabled={ending}
@@ -57,6 +68,6 @@ const InterviewInput = ({ onSend, onEnd, loading, ending }) => {
       </div>
     </div>
   );
-}
+};
 
 export default InterviewInput;

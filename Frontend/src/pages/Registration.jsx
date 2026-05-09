@@ -1,14 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { registerUser } from "../api/authapi";
 import AuthSidePanel from "../components/AuthSidePanel";
 import CreateUserForm from "../components/CreateUserForm";
-import "../components/AuthStyles.css";
 
 const Registration = () => {
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState("signup");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (mode === "login") {
+      navigate("/login");
+    }
+  }, [mode, navigate]);
 
   const handleCreateUser = async (data) => {
     setLoading(true);
@@ -37,16 +43,9 @@ const Registration = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-wrapper">
-        <AuthSidePanel />
-        <div className="auth-form-container">
-          <CreateUserForm 
-          onSubmit={handleCreateUser} loading={loading} 
-          />
-        </div>
-      </div>
-    </div>
+    <AuthSidePanel mode={mode} setMode={setMode}>
+      <CreateUserForm onSubmit={handleCreateUser} loading={loading} />
+    </AuthSidePanel>
   );
 };
 
