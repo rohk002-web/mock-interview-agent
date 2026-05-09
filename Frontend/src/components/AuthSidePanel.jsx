@@ -129,8 +129,7 @@ const AuthSidePanel = ({ children, mode, setMode }) => {
                 <Mic className="w-5 h-5 text-[#070711]" />
               </div>
               <div>
-                <p className="font-semibold tracking-tight">MockMate AI</p>
-                <p className="text-xs text-white/50">Your AI Interview Coach</p>
+                <p className="font-semibold tracking-tight">Mock Interview Application</p>
               </div>
             </div>
 
