@@ -34,8 +34,12 @@ const HomePage = () => {
     setCurrentStep(steps.UPLOAD);
   };
 
+  const handleBackToDetails = () => {
+    setCurrentStep(steps.DETAILS);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-200 via-slate-100 to-indigo-200 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-200 via-slate-100 to-indigo-200 relative overflow-hidden flex flex-col">
       <Header />
       {/* Soft Animated Blobs - Slightly darker */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-indigo-400/20 rounded-full filter blur-[80px] animate-blob"></div>
@@ -58,7 +62,7 @@ const HomePage = () => {
       <StepIndicator currentStep={currentStep} steps={steps} />
 
       {/* Main Content - Compact */}
-      <main className="relative z-10 max-w-2xl mx-auto px-4">
+      <main className="relative z-10 max-w-2xl mx-auto px-4 flex-1 w-full">
         <div className="bg-white/85 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-300/50 border border-slate-200/80 overflow-hidden">
           {currentStep === steps.UPLOAD && (
             <UploadStep onUploadSuccess={handleUploadSuccess} />
@@ -67,8 +71,10 @@ const HomePage = () => {
           {currentStep === steps.DETAILS && (
             <InterviewDetailsStep
               resumeId={resumeId}
+              interviewId={interviewId}
               onBack={handleBackToUpload}
               onSuccess={handleDetailsSuccess}
+              isEditMode={currentStep === steps.DETAILS && interviewId !== null}
             />
           )}
 
@@ -76,6 +82,7 @@ const HomePage = () => {
             <SuccessStep
               interviewData={interviewData}
               interviewId={interviewId}
+              onBack={handleBackToDetails}
             />
           )}
         </div>

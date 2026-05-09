@@ -10,7 +10,7 @@ const ReportModal = ({ report, onClose, onGoHome }) => {
 
       {/* Modal */}
       <div className="absolute inset-0 flex items-center justify-center p-4">
-        <div className="bg-white w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-2xl shadow-2xl animate-fade-in">
+        <div className="bg-white w-full max-w-lg max-h-[85vh] overflow-auto rounded-2xl shadow-2xl animate-fade-in">
 
           {/* Header */}
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
@@ -24,12 +24,6 @@ const ReportModal = ({ report, onClose, onGoHome }) => {
                   <p className="text-indigo-100 text-sm">Here's your performance report</p>
                 </div>
               </div>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
             </div>
           </div>
 
@@ -43,9 +37,7 @@ const ReportModal = ({ report, onClose, onGoHome }) => {
                     {report.total_score}<span className="text-lg text-slate-400">/100</span>
                   </p>
                 </div>
-                <div className="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-indigo-200">
-                  {report.total_score >= 80 ? "🎉" : report.total_score >= 60 ? "👍" : "💪"}
-                </div>
+              
               </div>
             </div>
 
@@ -108,16 +100,10 @@ const ReportModal = ({ report, onClose, onGoHome }) => {
             <div className="flex gap-3 pt-4 border-t border-slate-100">
               <button
                 onClick={onGoHome}
-                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:shadow-lg hover:shadow-indigo-200 transition-all"
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:shadow-lg hover:shadow-indigo-200 transition-all cursor-pointer"
               >
                 <Home className="w-4 h-4" />
                 Go to Home
-              </button>
-              <button
-                onClick={onClose}
-                className="px-6 py-3 rounded-xl border border-slate-300 text-slate-600 font-medium hover:bg-slate-50 transition-all"
-              >
-                Close
               </button>
             </div>
           </div>

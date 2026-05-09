@@ -1,22 +1,55 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Briefcase, ArrowLeft } from "lucide-react";
-import { addInterviewDetails } from "../api/interviewApi";
+import { Briefcase, Pencil } from "lucide-react";
+import { addInterviewDetails , getInterviewById , updateInterviewDetails} from "../api/interviewApi";
 
 const interviewLevels = ["Junior", "Mid", "Senior", "Lead"];
 
-const InterviewDetailsStep = ({ resumeId, onBack, onSuccess }) => {
+const InterviewDetailsStep = ({
+  resumeId,
+  interviewId,
+  onSuccess,
+  isEditMode = false
+}) => {
   const [submitting, setSubmitting] = useState(false);
+  const [isEditing, setIsEditing] = useState(isEditMode);
   const [interviewData, setInterviewData] = useState({
     role: "",
     years_of_experience: "",
     interview_level: ""
   });
 
+  useEffect(() => {
+    setIsEditing(isEditMode);
+  }, [isEditMode]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setInterviewData((prev) => ({ ...prev, [name]: value }));
   };
+
+  useEffect(() => {
+  const fetchInterview = async () => {
+    if (!interviewId || typeof interviewId !== 'string' && typeof interviewId !== 'number') return;
+
+    try {
+      const res = await getInterviewById(interviewId);
+      if (!res || typeof res !== 'object') {
+        throw new Error('Invalid response from server');
+      }
+
+      setInterviewData({
+        role: res.role || "",
+        years_of_experience: res.years_of_experience || "",
+        interview_level: res.interview_level || ""
+      });
+    } catch (err) {
+      toast.error("Failed to fetch interview details");
+    }
+  };
+
+  fetchInterview();
+}, [interviewId]);
 
   const handleSubmitDetails = async () => {
     if (!interviewData.role.trim()) {
@@ -37,7 +70,9 @@ const InterviewDetailsStep = ({ resumeId, onBack, onSuccess }) => {
 
     setSubmitting(true);
     try {
-      const res = await addInterviewDetails(payload);
+      const res = interviewId
+      ? await updateInterviewDetails(interviewId, payload)
+      : await addInterviewDetails(payload);
       toast.success(res.message || "Interview created successfully!");
       // Pass full API response which should include interview_id
       onSuccess({ ...interviewData, interview_id: res.interview_id || res.id });
@@ -68,6 +103,7 @@ const InterviewDetailsStep = ({ resumeId, onBack, onSuccess }) => {
               value={interviewData.role}
               onChange={handleInputChange}
               placeholder="e.g., Software Engineer"
+              disabled={interviewId && !isEditing}
               className="w-full px-3 py-2 text-sm rounded-lg bg-white border border-slate-300 text-slate-800 placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
             />
           </div>
@@ -93,7 +129,13 @@ const InterviewDetailsStep = ({ resumeId, onBack, onSuccess }) => {
             {interviewLevels.map((level) => (
               <button
                 key={level}
-                onClick={() => setInterviewData((prev) => ({ ...prev, interview_level: level }))}
+                onClick={() =>
+              !(interviewId && !isEditing) &&
+              setInterviewData((prev) => ({
+                ...prev,
+                interview_level: level
+              }))
+            }
                 className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
                   interviewData.interview_level === level
                     ? "bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-200"
@@ -109,6 +151,15 @@ const InterviewDetailsStep = ({ resumeId, onBack, onSuccess }) => {
 
       {/* Action Buttons */}
       <div className="flex gap-3 mt-6">
+         {interviewId && !isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="px-4 py-3 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Pencil className="w-4 h-4" />
+            Edit
+          </button>
+        )}
         <button
           onClick={handleSubmitDetails}
           disabled={submitting}

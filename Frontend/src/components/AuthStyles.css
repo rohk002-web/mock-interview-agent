@@ -14,6 +14,12 @@
   overflow-x: hidden;
 }
 
+@supports (height: 100svh) {
+  .auth-container {
+    min-height: 100svh;
+  }
+}
+
 .auth-wrapper {
   display: flex;
   width: 100%;
@@ -227,5 +233,27 @@
   .auth-form-container {
     width: 100%;
     padding: 3rem 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-container {
+    padding: 1rem;
+    align-items: stretch;
+  }
+  .auth-wrapper {
+    width: 100%;
+  }
+  .auth-form-container {
+    padding: 2.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .auth-wrapper {
+    border-radius: 1.25rem;
+  }
+  .auth-form-container {
+    padding: 2rem 1.25rem;
   }
 }

@@ -25,6 +25,14 @@ class GetCandidateInterviewDetailsResponse(BaseModel):
 class InterviewDetailsListResponse(BaseModel):
     message: str
     data: List[GetCandidateInterviewDetailsResponse]
+
+class CandidateInterviewDetailsById(BaseModel):
+    interview_id: str
+    resume_id: str
+    role: str
+    years_of_experience: float
+    interview_level: str
+    interview_mode: Optional[str] = "chat"
   
 
     class Config:

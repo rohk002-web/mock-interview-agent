@@ -1,8 +1,8 @@
-import { CheckCircle, Play } from "lucide-react";
+import { CheckCircle, Play, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-const SuccessStep = ({ interviewData, interviewId }) => {
+  const SuccessStep = ({ interviewData, interviewId, onBack }) => {
   const navigate = useNavigate();
 
   const onStartInterview = () => {
@@ -15,6 +15,13 @@ const SuccessStep = ({ interviewData, interviewId }) => {
 
   return (
     <div className="p-6 text-center animate-fade-in">
+        <button
+        onClick={onBack}
+        className="px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 transition-all flex items-center justify-center cursor-pointer"
+      >
+        <ArrowLeft className="w-4 h-4" />
+      </button>
+
       <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-200">
         <CheckCircle className="w-8 h-8 text-green-600" />
       </div>

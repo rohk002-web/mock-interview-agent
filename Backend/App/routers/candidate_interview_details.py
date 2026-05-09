@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List
 from App.config.db_connection import get_db
 from App.service.authentication_service import get_current_user
-from App.service.candidate_interview_service import add_interview_details , get_interview_details_service , update_interview_details_service , delete_interview_details_service
-from App.schema.candidate_interview_schema import CandidateInterviewDetailsResponse, SaveCandidateInterviewDetails, InterviewDetailsListResponse
+from App.service.candidate_interview_service import add_interview_details , get_interview_details_service , update_interview_details_service , delete_interview_details_service , get_interview_details_service_id
+from App.schema.candidate_interview_schema import CandidateInterviewDetailsResponse, SaveCandidateInterviewDetails, InterviewDetailsListResponse , CandidateInterviewDetailsById
 from uuid import UUID
 
 router= APIRouter(tags=["Interview details management"])
@@ -12,6 +12,10 @@ router= APIRouter(tags=["Interview details management"])
 @router.get("/interview-details", response_model=InterviewDetailsListResponse)
 async def get_interview_details(db: Session = Depends(get_db), current_user=Depends(get_current_user)):
     return get_interview_details_service(db, current_user)
+
+@router.get("/interview-details/{interview_id}", response_model=CandidateInterviewDetailsById)
+async def get_interview_details_by_id(interview_id: UUID, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
+    return get_interview_details_service_id(db, current_user, interview_id=interview_id)
 
 @router.post("/add-interview-details",response_model=CandidateInterviewDetailsResponse)
 async def interview_details(request: SaveCandidateInterviewDetails, db: Session = Depends(get_db), current_user=Depends(get_current_user)):

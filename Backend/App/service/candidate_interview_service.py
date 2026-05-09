@@ -1,5 +1,6 @@
 from datetime import datetime,timedelta
 from uuid import UUID
+from uuid import UUID
 from App.config.db_connection import get_db
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
@@ -34,7 +35,23 @@ def get_interview_details_service(db:Session,current_user):
          "data": data
      }
 
+def get_interview_details_service_id(db:Session,current_user, interview_id: UUID):
+    interview_details = db.query(CandidateInterviewDetails).filter(
+        CandidateInterviewDetails.interview_id == interview_id,
+        CandidateInterviewDetails.user_id == current_user.id
+    ).first()
 
+    if not interview_details:
+        raise HTTPException(status_code=404, detail="Interview details not found")
+
+    return {
+        "interview_id": str(interview_details.interview_id),
+        "resume_id": str(interview_details.resume_id),
+        "role": interview_details.role,
+        "years_of_experience": interview_details.years_of_experience,
+        "interview_level": interview_details.interview_level,
+        "interview_mode": interview_details.interview_mode
+    }
 
 def add_interview_details(db:Session,current_user, resume_id: int, role: str, years_of_experience: float, interview_level: str, interview_mode: str):
     try:
@@ -68,6 +85,7 @@ def update_interview_details_service(db:Session,current_user, resume_id: int, ro
     try:
         interview_details = db.query(CandidateInterviewDetails).filter(
             CandidateInterviewDetails.interview_id == interview_id,
+        CandidateInterviewDetails.interview_id == interview_id,
             CandidateInterviewDetails.user_id == current_user.id
         ).first()
 
@@ -110,14 +128,13 @@ def delete_interview_details_service(
     interview_id = UUID(str(interview_id))
 
     interview_details = db.query(CandidateInterviewDetails).filter(
-        CandidateInterviewDetails.interview_id == interview_id,
-        CandidateInterviewDetails.user_id == current_user.id
+        CandidateInterviewDetails.interview_id == interview_id
     ).first()
 
     if not interview_details:
         raise HTTPException(
             status_code=404,
-            detail="Interview details not found"
+            detail="Interview details not found (check interview_id or user ownership)"
         )
 
     db.delete(interview_details)

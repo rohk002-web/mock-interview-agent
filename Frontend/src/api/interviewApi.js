@@ -81,3 +81,48 @@ export const endInterviewApi = async (interviewId) => {
 
   return data;
 };
+
+
+export const getInterviewById = async (interviewId) => {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${BASE_URL}/interview-details/${interviewId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      data?.detail || data?.message || "Failed to fetch interview details"
+    );
+  }
+
+  return data;
+};
+
+export const updateInterviewDetails = async (interviewId, payload) => {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${BASE_URL}/update-interview-details/${interviewId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      data?.detail || data?.message || "Failed to update interview details"
+    );
+  }
+
+  return data;
+};
