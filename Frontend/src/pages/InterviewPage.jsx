@@ -14,7 +14,7 @@ const InterviewPage = () => {
   const [messages, setMessages] = useState([
     {
       role: "ai",
-      text: "Hi! I'm your AI interviewer. Let's begin — introduce yourself."
+      text: "Start the Interview by Typing Hi or Hello!"
     }
   ]);
 

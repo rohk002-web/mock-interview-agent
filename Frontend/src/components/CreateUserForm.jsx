@@ -39,7 +39,6 @@ const CreateUserForm = ({ onSubmit, loading }) => {
     <div className="animate-fade-in">
       <div className="mb-6">
         <h2 className="text-2xl font-semibold tracking-tight">Start practicing today</h2>
-        <p className="text-sm text-white/50 mt-1.5">Free forever. No credit card required.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">

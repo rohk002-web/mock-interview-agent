@@ -26,7 +26,6 @@ const SignInForm = ({ onSubmit, loading }) => {
     <div className="animate-fade-in">
       <div className="mb-6">
         <h2 className="text-2xl font-semibold tracking-tight">Welcome back </h2>
-        <p className="text-sm text-white/50 mt-1.5">Sign in to resume your interview prep.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">

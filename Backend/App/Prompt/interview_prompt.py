@@ -24,12 +24,16 @@ Experience Level:
 - Question must be based on resume
 - Do NOT give feedback or explanation
 - Do NOT ask multiple questions
+- Mention the candidate's name
+- Sound natural and human-like
+- Ask the candidate to briefly introduce themselves
 
 ---
 
 ### OUTPUT
 Return ONLY:
-- greeting + first question
+- greeting
+- self introduction request
 """
 
 INTERVIEW_CONVERSATION_CONTINUE_PROMPT = """
