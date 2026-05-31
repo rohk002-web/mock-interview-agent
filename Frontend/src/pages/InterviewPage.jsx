@@ -4,7 +4,6 @@ import {sendInterviewMessage, endInterviewApi} from "../api/interviewApi";
 import ChatWindow from "../components/ChatWindow";
 import InterviewInput from "../components/InterviewInput";
 import ReportModal from "../components/ReportModal";
-import EndInterviewModal from "../components/EndInterviewModal";
 import Header from "../components/Header";
 
 
@@ -22,17 +21,11 @@ const InterviewPage = () => {
   const [ending, setEnding] = useState(false);
   const [report, setReport] = useState(null);
   const [showReport, setShowReport] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [isInterviewEnded, setIsInterviewEnded] = useState(false);
 
 
 
-  const handleEndClick = () => {
-    setShowConfirm(true);
-  };
-
-  const confirmEndInterview = async () => {
-    setShowConfirm(false);
+  const handleEndClick = async () => {
     setEnding(true);
 
     try {
@@ -46,10 +39,6 @@ const InterviewPage = () => {
     } finally {
       setEnding(false);
     }
-  };
-
-  const cancelEndInterview = () => {
-    setShowConfirm(false);
   };
 
   const sendMessage = async (text) => {
@@ -113,13 +102,6 @@ const InterviewPage = () => {
         disabled={isInterviewEnded}
       />
 
-      {/* CONFIRMATION DIALOG */}
-      {showConfirm && (
-        <EndInterviewModal
-          onCancel={cancelEndInterview}
-          onConfirm={confirmEndInterview}
-        />
-      )}
 
       {/* REPORT MODAL */}
       {showReport && (

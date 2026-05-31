@@ -51,7 +51,6 @@ const InterviewInput = ({
           onClick={onEnd}
           disabled={ending}
           className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-red-500 to-rose-500 text-white font-medium text-sm hover:shadow-lg hover:shadow-red-200 disabled:opacity-60 transition-all cursor-pointer"
-          title="End Interview & Generate Report"
         >
           {ending ? (
             <>

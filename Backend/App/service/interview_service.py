@@ -28,7 +28,7 @@ def interview_conversation_service(db, interview_id, user_id, user_answer):
         .first()
 
     # STEP 2: RAG CONTEXT
-    query_text = user_answer if user_answer else f"{interview.role} {interview.interview_level}"
+    query_text = f"{user_answer} {interview.role} {interview.interview_level}".strip()
 
     query_embedding = get_embedding(query_text)
 

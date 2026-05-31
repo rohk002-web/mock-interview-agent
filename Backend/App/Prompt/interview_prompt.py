@@ -21,7 +21,7 @@ Experience Level:
 - Greet the candidate briefly
 - Start the interview naturally
 - Ask ONLY the first interview question
-- Question must be based on resume
+- Question must be based on resume and the selected role, experience level
 - Do NOT give feedback or explanation
 - Do NOT ask multiple questions
 - Mention the candidate's name
@@ -62,7 +62,7 @@ Level:
 
 ### RULES
 - Ask ONLY ONE next question
-- Be strictly relevant to resume
+- Be strictly relevant to resume, role, and experience level
 - Do NOT give feedback
 - Do NOT explain answers
 
