@@ -76,7 +76,9 @@ const SignInForm = ({ onSubmit, loading }) => {
           className="w-full h-12 rounded-lg bg-gradient-to-r from-cyan-400 to-fuchsia-500 text-[#070711] font-semibold shadow-lg shadow-fuchsia-500/30 hover:shadow-fuchsia-500/50 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2 group cursor-pointer"
         >
           {loading ? "Signing in..." : "Sign in"}
+          {!loading && (
           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+        )}
         </button>
       </form>
     </div>
